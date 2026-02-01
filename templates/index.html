@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Doodle Garden - Draw</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style-new.css') }}">
+</head>
+
+<body class="draw-page">
+    <div class="draw-container">
+        <header class="draw-header">
+            <div class="header-left">
+                <h1>🌿 Virtual Doodle Garden</h1>
+                <p class="subtitle">Draw → Grow → Collect</p>
+            </div>
+            <div class="header-right">
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <span class="stat-value" id="plantCount">0</span>
+                        <span>Plants</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="streakCount">0</span>
+                        <span>Streak 🔥</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-value" id="credits">0</span>
+                        <span>Credits 💰</span>
+                    </div>
+                </div>
+                <span id="userEmail" class="user-email"></span>
+                <button id="logoutBtn" class="btn btn-secondary btn-small">Logout</button>
+            </div>
+        </header>
+
+        <div class="canvas-wrapper">
+            <canvas id="drawCanvas"></canvas>
+            <div class="canvas-overlay">
+                <p class="hint">Draw something here</p>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="clearBtn" class="btn btn-secondary">Clear</button>
+            <input type="color" id="brushColor" value="#2d5016" title="Brush Color"
+                style="width: 50px; height: 40px; border: none; border-radius: 8px; cursor: pointer;">
+            <input type="range" id="brushSize" min="1" max="20" value="3" title="Brush Size" style="width: 120px;">
+            <button id="plantBtn" class="btn btn-primary">Plant 🌿</button>
+            <button id="cosmeticsBtn" class="btn btn-secondary">✨ Cosmetics Shop</button>
+            <a href="/garden" class="btn btn-secondary">My Garden →</a>
+        </div>
+
+        <!-- Cosmetics Shop Modal -->
+        <div id="cosmeticsModal"
+            style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; padding: 2rem;">
+            <div
+                style="max-width: 900px; margin: 2rem auto; background: #1a1a2e; border-radius: 12px; padding: 2rem; border: 2px solid rgba(255, 105, 180, 0.3);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2 style="color: #ff69b4; margin: 0;">✨ Cosmetics Shop</h2>
+                    <button id="closeCosmeticsBtn"
+                        style="background: none; border: none; color: #ff69b4; font-size: 24px; cursor: pointer;">✕</button>
+                </div>
+                <div id="cosmeticsGrid"
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <!-- Cosmetics will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <div id="loadingSpinner" class="loading-spinner hidden">
+            <div class="spinner"></div>
+            <p>Growing your plant...</p>
+        </div>
+
+        <div id="errorMessage" class="error-message hidden"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/draw.js') }}"></script>
+</body>
+
+</html>

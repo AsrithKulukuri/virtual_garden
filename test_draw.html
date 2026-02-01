@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Test Drawing</title>
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+        }
+
+        canvas {
+            border: 2px solid #000;
+            cursor: crosshair;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px 5px;
+            font-size: 16px;
+        }
+
+        .info {
+            background: #f0f0f0;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Draw Test</h1>
+    <div class="info" id="authInfo">Checking auth...</div>
+
+    <canvas id="canvas" width="400" height="400"></canvas>
+    <br>
+    <button id="clearBtn">Clear</button>
+    <button id="submitBtn">Submit Drawing</button>
+
+    <div class="info" id="result"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const SUPABASE_URL = 'https://icyrucuuitdxivcpyhlg.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImljeXJ1Y3V1aXRkeGl2Y3B5aGxnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk2NjM0NzAsImV4cCI6MjA4NTIzOTQ3MH0.96egdfcPHnI7hW64-5rvr4IsSfoZ9YZVtBgtVY2Pwf4';
+
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+
+        // White background
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, 400, 400);
+        ctx.strokeStyle = '#2d5016';
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+
+        // Drawing
+        canvas.addEventListener('mousedown', (e) => {
+            isDrawing = true;
+            const rect = canvas.getBoundingClientRect();
+            ctx.beginPath();
+            ctx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+        });
+
+        canvas.addEventListener('mousemove', (e) => {
+            if (!isDrawing) return;
+            const rect = canvas.getBoundingClientRect();
+            ctx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+            ctx.stroke();
+        });
+
+        canvas.addEventListener('mouseup', () => { isDrawing = false; });
+        canvas.addEventListener('mouseout', () => { isDrawing = false; });
+
+        // Clear button
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, 400, 400);
+        });
+
+        // Check auth on load
+        (async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            const authInfo = document.getElementById('authInfo');
+
+            if (session) {
+                authInfo.innerHTML = `✅ Logged in as: ${session.user.email}<br>Token: ${session.access_token.substring(0, 30)}...`;
+            } else {
+                authInfo.innerHTML = '❌ Not logged in. Please <a href="/login">login first</a>';
+            }
+        })();
+
+        // Submit button
+        document.getElementById('submitBtn').addEventListener('click', async () => {
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = '⏳ Submitting...';
+
+            try {
+                // Get session
+                const { data: { session } } = await supabase.auth.getSession();
+
+                if (!session) {
+                    resultDiv.innerHTML = '❌ Not authenticated. Please <a href="/login">login</a>';
+                    return;
+                }
+
+                const token = session.access_token;
+                const imageData = canvas.toDataURL('image/png');
+
+                console.log('Token:', token.substring(0, 50) + '...');
+                console.log('Image data length:', imageData.length);
+
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ image: imageData })
+                });
+
+                console.log('Response status:', response.status);
+                const data = await response.json();
+                console.log('Response data:', data);
+
+                if (response.ok) {
+                    resultDiv.innerHTML = `✅ Plant created!<br><pre>${JSON.stringify(data, null, 2)}</pre>`;
+                } else {
+                    resultDiv.innerHTML = `❌ Error: ${data.error || 'Unknown error'}<br>Status: ${response.status}`;
+                }
+
+            } catch (error) {
+                resultDiv.innerHTML = `❌ Exception: ${error.message}`;
+                console.error('Error:', error);
+            }
+        });
+    </script>
+</body>
+
+</html>

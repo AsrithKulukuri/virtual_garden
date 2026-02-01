@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Doodle Garden - Your Garden</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style-new.css') }}">
+</head>
+
+<body class="garden-page">
+    <div style="max-width: 1400px; margin: 0 auto;">
+        <header class="garden-header"
+            style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; padding: 1.5rem;">
+            <div>
+                <h1>🌿 Your Garden</h1>
+                <p class="subtitle">Your doodles have bloomed into plants</p>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <a href="/" class="btn btn-secondary btn-small">← Draw More</a>
+                <button id="logoutBtn" class="btn btn-secondary btn-small">Logout</button>
+            </div>
+        </header>
+
+        <div class="garden-stats">
+            <div class="stat-card">
+                <div class="value" id="totalPlants">0</div>
+                <div class="label">Total Plants</div>
+            </div>
+            <div class="stat-card">
+                <div class="value" id="tallestPlant">0px</div>
+                <div class="label">Tallest Plant</div>
+            </div>
+            <div class="stat-card">
+                <div class="value" id="colorVariety">0</div>
+                <div class="label">Color Variety</div>
+            </div>
+            <div class="stat-card">
+                <div class="value" id="leafTypes">0</div>
+                <div class="label">Leaf Types</div>
+            </div>
+            <div class="stat-card">
+                <div class="value" id="achievements">0</div>
+                <div class="label">Achievements</div>
+            </div>
+            <div class="stat-card">
+                <div class="value" id="credits">0</div>
+                <div class="label">💰 Credits</div>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 2rem; display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <select id="themeSelector"
+                style="padding: 0.75rem; border-radius: 8px; background: rgba(127, 211, 132, 0.1); color: #a8d5a8; border: 1px solid rgba(127, 211, 132, 0.3);">
+                <option value="default">🌞 Sunny Meadow</option>
+                <option value="forest">🌲 Dark Forest</option>
+                <option value="night">🌙 Midnight Garden</option>
+                <option value="space">🚀 Space Garden</option>
+            </select>
+            <button id="sortBtn"
+                style="padding: 0.75rem 1.5rem; border-radius: 8px; background: rgba(127, 211, 132, 0.1); color: #a8d5a8; border: 1px solid rgba(127, 211, 132, 0.3); cursor: pointer;">📊
+                Sort by Height</button>
+            <button id="challengeBtn"
+                style="padding: 0.75rem 1.5rem; border-radius: 8px; background: rgba(255, 193, 7, 0.1); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.3); cursor: pointer;">⚡
+                Daily Challenges</button>
+            <button id="cosmeticsBtn"
+                style="padding: 0.75rem 1.5rem; border-radius: 8px; background: rgba(255, 105, 180, 0.1); color: #ff69b4; border: 1px solid rgba(255, 105, 180, 0.3); cursor: pointer;">✨
+                Cosmetics Shop</button>
+            <button id="leaderboardBtn"
+                style="padding: 0.75rem 1.5rem; border-radius: 8px; background: rgba(100, 200, 255, 0.1); color: #64c8ff; border: 1px solid rgba(100, 200, 255, 0.3); cursor: pointer;">🏆
+                Leaderboard</button>
+            <button id="minigamesBtn"
+                style="padding: 0.75rem 1.5rem; border-radius: 8px; background: rgba(255, 165, 0, 0.1); color: #ffa500; border: 1px solid rgba(255, 165, 0, 0.3); cursor: pointer;">🎮
+                Mini-Games</button>
+        </div>
+
+        <!-- How to Play -->
+        <div id="howToPlay"
+            style="margin: 1.5rem 0 2rem; background: rgba(127, 211, 132, 0.08); border: 1px solid rgba(127, 211, 132, 0.25); border-radius: 12px; padding: 1.5rem;">
+            <h2 style="color: #7fd384; margin-top: 0;">🧭 How to Play</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+                <div>
+                    <h4 style="color: #a8d5a8; margin: 0 0 0.5rem;">1) Draw & Grow</h4>
+                    <p style="margin: 0; color: #cfe8cf;">Tap “Draw More” and doodle a plant. Save it to grow your
+                        garden.</p>
+                </div>
+                <div>
+                    <h4 style="color: #a8d5a8; margin: 0 0 0.5rem;">2) Earn Credits</h4>
+                    <p style="margin: 0; color: #cfe8cf;">Credits come from plants, achievements, streaks, and
+                        mini‑games.</p>
+                </div>
+                <div>
+                    <h4 style="color: #a8d5a8; margin: 0 0 0.5rem;">3) Play Mini‑Games</h4>
+                    <p style="margin: 0; color: #cfe8cf;">Open 🎮 Mini‑Games to win bonus credits and achievements.</p>
+                </div>
+                <div>
+                    <h4 style="color: #a8d5a8; margin: 0 0 0.5rem;">4) Customize</h4>
+                    <p style="margin: 0; color: #cfe8cf;">Spend credits in the ✨ Cosmetics Shop to style your plants.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Daily Challenges Panel -->
+        <div id="challengesPanel"
+            style="display: none; margin: 2rem 0; background: rgba(255, 193, 7, 0.05); border: 1px solid rgba(255, 193, 7, 0.3); border-radius: 12px; padding: 1.5rem;">
+            <h2 style="color: #ffc107; margin-top: 0;">⚡ Today's Challenges</h2>
+            <div id="challengesList"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem;">
+                <!-- Challenges will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Leaderboard Modal -->
+        <div id="leaderboardModal"
+            style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; padding: 2rem;">
+            <div
+                style="max-width: 1000px; margin: 2rem auto; background: #1a1a2e; border-radius: 12px; padding: 2rem; border: 2px solid rgba(100, 200, 255, 0.3); max-height: 80vh; overflow-y: auto;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2 style="color: #64c8ff; margin: 0;">🏆 Global Leaderboard</h2>
+                    <button id="closeLeaderboardBtn"
+                        style="background: none; border: none; color: #64c8ff; font-size: 24px; cursor: pointer;">✕</button>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2rem;">
+                    <!-- By Plants -->
+                    <div>
+                        <h3 style="color: #7fd384; text-align: center;">🌱 Most Plants</h3>
+                        <div id="leaderboardByPlants" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        </div>
+                    </div>
+
+                    <!-- By Credits -->
+                    <div>
+                        <h3 style="color: #ffc107; text-align: center;">💰 Most Credits</h3>
+                        <div id="leaderboardByCredits" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        </div>
+                    </div>
+
+                    <!-- By Streaks -->
+                    <div>
+                        <h3 style="color: #ff6b6b; text-align: center;">🔥 Longest Streaks</h3>
+                        <div id="leaderboardByStreaks" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cosmetics Shop Modal -->
+        <div id="cosmeticsModal"
+            style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; padding: 2rem;">
+            <div
+                style="max-width: 900px; margin: 2rem auto; background: #1a1a2e; border-radius: 12px; padding: 2rem; border: 2px solid rgba(255, 105, 180, 0.3);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2 style="color: #ff69b4; margin: 0;">✨ Cosmetics Shop</h2>
+                    <button id="closeCosmeticsBtn"
+                        style="background: none; border: none; color: #ff69b4; font-size: 24px; cursor: pointer;">✕</button>
+                </div>
+                <div id="cosmeticsGrid"
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                    <!-- Cosmetics will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Mini-Games Modal -->
+        <div id="minigamesModal"
+            style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; padding: 2rem;">
+            <div
+                style="max-width: 600px; margin: 2rem auto; background: #1a1a2e; border-radius: 12px; padding: 2rem; border: 2px solid rgba(255, 165, 0, 0.3);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                    <h2 style="color: #ffa500; margin: 0;">🎮 Mini-Games</h2>
+                    <button id="closeMinigamesBtn"
+                        style="background: none; border: none; color: #ffa500; font-size: 24px; cursor: pointer;">✕</button>
+                </div>
+                <div id="minigamesMenuPanel" style="display: none;">
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+                        <button id="startSpeedDrawBtn"
+                            style="padding: 1.5rem; background: rgba(255, 165, 0, 0.2); border: 2px solid rgba(255, 165, 0, 0.5); border-radius: 8px; color: #ffa500; cursor: pointer; font-size: 1.1rem;">
+                            ⚡ Speed Draw - Draw 5 plants in 60 seconds!<br><small
+                                style="font-size: 0.8rem; color: #aaa;">Reward: +100 credits</small>
+                        </button>
+                        <button id="startColorMatchBtn"
+                            style="padding: 1.5rem; background: rgba(100, 200, 255, 0.2); border: 2px solid rgba(100, 200, 255, 0.5); border-radius: 8px; color: #64c8ff; cursor: pointer; font-size: 1.1rem;">
+                            🎨 Color Match - Remember the sequence!<br><small
+                                style="font-size: 0.8rem; color: #aaa;">Reward: +75 credits</small>
+                        </button>
+                        <button id="startHeightChallengeBtn"
+                            style="padding: 1.5rem; background: rgba(127, 211, 132, 0.2); border: 2px solid rgba(127, 211, 132, 0.5); border-radius: 8px; color: #7fd384; cursor: pointer; font-size: 1.1rem;">
+                            📏 Height Challenge - Grow a plant over 350px!<br><small
+                                style="font-size: 0.8rem; color: #aaa;">Reward: +75 credits</small>
+                        </button>
+                    </div>
+                </div>
+                <div id="speedDrawPanel" style="display: none; text-align: center;">
+                    <h3 style="color: #ffa500;">⚡ Speed Draw Challenge</h3>
+                    <div style="font-size: 3rem; margin: 2rem 0; color: #ffa500; font-weight: bold;">
+                        <span id="speedDrawTimer">60</span>s
+                    </div>
+                    <div style="font-size: 2rem; margin: 2rem 0; color: #7fd384;">
+                        Plants: <span id="speedDrawCounter">0</span>/5
+                    </div>
+                    <p style="color: #aaa; margin: 1rem 0;">Go to the drawing page and draw 5 plants before time runs
+                        out!</p>
+                    <div style="display: flex; gap: 1rem; justify-content: center;">
+                        <a href="/" class="btn btn-primary">Draw Now</a>
+                        <button id="cancelSpeedDrawBtn"
+                            style="padding: 0.75rem 1.5rem; background: rgba(255, 105, 180, 0.2); border: 1px solid rgba(255, 105, 180, 0.5); border-radius: 8px; color: #ff69b4; cursor: pointer;">Cancel</button>
+                    </div>
+                </div>
+
+                <!-- Color Match Game -->
+                <div id="colorMatchPanel" style="display: none; text-align: center;">
+                    <h3 style="color: #64c8ff;">🎨 Color Match Challenge</h3>
+                    <div style="font-size: 2rem; margin: 1.5rem 0; color: #64c8ff; font-weight: bold;">
+                        Level: <span id="colorMatchLevel">1</span> | Score: <span id="colorMatchScore">0</span>
+                    </div>
+                    <div id="colorMatchDisplay"
+                        style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; max-width: 300px; margin: 2rem auto;">
+                        <!-- Color boxes will be generated here -->
+                    </div>
+                    <p style="color: #aaa; margin: 1rem 0;">Watch and repeat the color sequence!</p>
+                    <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                        <button id="colorMatchStartBtn"
+                            style="padding: 0.75rem 1.5rem; background: rgba(100, 200, 255, 0.2); border: 1px solid rgba(100, 200, 255, 0.5); border-radius: 8px; color: #64c8ff; cursor: pointer;">Start</button>
+                        <button id="cancelColorMatchBtn"
+                            style="padding: 0.75rem 1.5rem; background: rgba(255, 105, 180, 0.2); border: 1px solid rgba(255, 105, 180, 0.5); border-radius: 8px; color: #ff69b4; cursor: pointer;">Cancel</button>
+                    </div>
+                </div>
+
+                <!-- Height Challenge Game -->
+                <div id="heightChallengePanel" style="display: none; text-align: center;">
+                    <h3 style="color: #7fd384;">📏 Height Challenge</h3>
+                    <div style="font-size: 1.5rem; margin: 1.5rem 0; color: #7fd384;">
+                        Goal: <span id="heightTarget">350</span>px | Current: <span id="currentHeight">0</span>px
+                    </div>
+                    <div
+                        style="width: 100%; height: 200px; background: rgba(127, 211, 132, 0.1); border: 2px solid rgba(127, 211, 132, 0.3); border-radius: 8px; margin: 2rem 0; position: relative; max-width: 300px; margin-left: auto; margin-right: auto;">
+                        <div id="heightBar"
+                            style="position: absolute; bottom: 0; left: 0; width: 100%; height: 0%; background: linear-gradient(to top, #7fd384, #5dd46f); transition: height 0.3s; border-radius: 6px;">
+                        </div>
+                        <div
+                            style="position: absolute; top: -25px; right: 0; font-size: 0.8rem; color: #7fd384; font-weight: bold;">
+                            350px</div>
+                    </div>
+                    <p style="color: #aaa; margin: 1rem 0;">Draw a plant taller than 350px to win +75 credits!</p>
+                    <div style="display: flex; gap: 1rem; justify-content: center;">
+                        <a href="/" class="btn btn-primary">Draw Now</a>
+                        <button id="cancelHeightChallengeBtn"
+                            style="padding: 0.75rem 1.5rem; background: rgba(255, 105, 180, 0.2); border: 1px solid rgba(255, 105, 180, 0.5); border-radius: 8px; color: #ff69b4; cursor: pointer;">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="loadingSpinner" class="loading-spinner">
+            <div class="spinner"></div>
+            <p>Loading your garden...</p>
+        </div>
+
+        <div id="gardenGrid" class="garden-grid hidden">
+            <!-- Plants will be inserted here by JavaScript -->
+        </div>
+
+        <div id="emptyState" class="empty-state hidden"
+            style="text-align: center; padding: 3rem; background: rgba(127, 211, 132, 0.1); border-radius: 15px; margin: 2rem;">
+            <div class="empty-icon">🌱</div>
+            <p style="color: #a8d5a8; font-size: 1.1rem;">Your garden is empty. <a href="/"
+                    style="color: #7fd384; text-decoration: none; font-weight: 600;">Draw a doodle</a> to grow a plant!
+            </p>
+        </div>
+
+        <div id="errorMessage" class="error-message hidden"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/garden.js') }}"></script>
+</body>
+
+</html>
